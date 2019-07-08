@@ -39,7 +39,7 @@ class ShareNetworkService: NetworkService {
                     let model = try JSONDecoder().decode(ShareModel.self, from: json.rawData())
                     update(response, model)
                 } catch {
-                    print("Network Error: Failed to decode Health JSON")
+                    print("Network Error: Failed to decode Share JSON")
                     update(response, nil)
                 }
                 

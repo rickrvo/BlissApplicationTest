@@ -42,7 +42,7 @@ class QuestionNetworkService: NetworkService {
                     let model = try JSONDecoder().decode([QuestionModel].self, from: json.rawData())
                     update(response, model)
                 } catch {
-                    print("Network Error: Failed to decode Movie JSON")
+                    print("Network Error: Failed to decode Question List JSON")
                     update(response, nil)
                 }
                 
@@ -106,7 +106,7 @@ class QuestionNetworkService: NetworkService {
                     let model = try JSONDecoder().decode(QuestionModel.self, from: json.rawData())
                     update(response, model)
                 } catch {
-                    print("Network Error: Failed to decode MovieForGenre JSON")
+                    print("Network Error: Failed to decode Create Question JSON")
                     update(response, nil)
                 }
                 
