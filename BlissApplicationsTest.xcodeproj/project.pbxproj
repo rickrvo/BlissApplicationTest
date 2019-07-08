@@ -3,10 +3,20 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 51;
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1D1479C722D1473600BDC25A /* APIRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D1479C622D1473600BDC25A /* APIRouter.swift */; };
+		1D1479CA22D147BD00BDC25A /* APIProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D1479C922D147BD00BDC25A /* APIProtocol.swift */; };
+		1D1479CC22D1485200BDC25A /* APIConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D1479CB22D1485200BDC25A /* APIConstants.swift */; };
+		1D1479CE22D1487000BDC25A /* APIService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D1479CD22D1487000BDC25A /* APIService.swift */; };
+		1D1479D022D274A700BDC25A /* HealthEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D1479CF22D274A700BDC25A /* HealthEndpoint.swift */; };
+		1D1479D322D275D600BDC25A /* HealthModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D1479D222D275D600BDC25A /* HealthModel.swift */; };
+		1D1479D522D277AD00BDC25A /* QuestionModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D1479D422D277AD00BDC25A /* QuestionModel.swift */; };
+		1D1479D722D2B11700BDC25A /* QuestionsEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D1479D622D2B11700BDC25A /* QuestionsEndpoint.swift */; };
+		1D1479D922D2C33F00BDC25A /* ShareEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D1479D822D2C33F00BDC25A /* ShareEndpoint.swift */; };
+		1D1479DB22D2C45800BDC25A /* ShareModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D1479DA22D2C45800BDC25A /* ShareModel.swift */; };
 		1DD2CBF022D13B50002B9740 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DD2CBEF22D13B4F002B9740 /* AppDelegate.swift */; };
 		1DD2CBF222D13B50002B9740 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DD2CBF122D13B50002B9740 /* ViewController.swift */; };
 		1DD2CBF522D13B50002B9740 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 1DD2CBF322D13B50002B9740 /* Main.storyboard */; };
@@ -37,6 +47,16 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		1D1479C622D1473600BDC25A /* APIRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIRouter.swift; sourceTree = "<group>"; };
+		1D1479C922D147BD00BDC25A /* APIProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIProtocol.swift; sourceTree = "<group>"; };
+		1D1479CB22D1485200BDC25A /* APIConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIConstants.swift; sourceTree = "<group>"; };
+		1D1479CD22D1487000BDC25A /* APIService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIService.swift; sourceTree = "<group>"; };
+		1D1479CF22D274A700BDC25A /* HealthEndpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthEndpoint.swift; sourceTree = "<group>"; };
+		1D1479D222D275D600BDC25A /* HealthModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthModel.swift; sourceTree = "<group>"; };
+		1D1479D422D277AD00BDC25A /* QuestionModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuestionModel.swift; sourceTree = "<group>"; };
+		1D1479D622D2B11700BDC25A /* QuestionsEndpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuestionsEndpoint.swift; sourceTree = "<group>"; };
+		1D1479D822D2C33F00BDC25A /* ShareEndpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareEndpoint.swift; sourceTree = "<group>"; };
+		1D1479DA22D2C45800BDC25A /* ShareModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareModel.swift; sourceTree = "<group>"; };
 		1DD2CBEC22D13B4F002B9740 /* BlissApplicationsTest.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BlissApplicationsTest.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1DD2CBEF22D13B4F002B9740 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		1DD2CBF122D13B50002B9740 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -89,6 +109,38 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		1D1479C322D142B800BDC25A /* Network */ = {
+			isa = PBXGroup;
+			children = (
+				1D1479C422D1430B00BDC25A /* Endpoints */,
+				1D1479C622D1473600BDC25A /* APIRouter.swift */,
+				1D1479C922D147BD00BDC25A /* APIProtocol.swift */,
+				1D1479CB22D1485200BDC25A /* APIConstants.swift */,
+				1D1479CD22D1487000BDC25A /* APIService.swift */,
+			);
+			path = Network;
+			sourceTree = "<group>";
+		};
+		1D1479C422D1430B00BDC25A /* Endpoints */ = {
+			isa = PBXGroup;
+			children = (
+				1D1479CF22D274A700BDC25A /* HealthEndpoint.swift */,
+				1D1479D622D2B11700BDC25A /* QuestionsEndpoint.swift */,
+				1D1479D822D2C33F00BDC25A /* ShareEndpoint.swift */,
+			);
+			path = Endpoints;
+			sourceTree = "<group>";
+		};
+		1D1479D122D275C100BDC25A /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				1D1479D222D275D600BDC25A /* HealthModel.swift */,
+				1D1479D422D277AD00BDC25A /* QuestionModel.swift */,
+				1D1479DA22D2C45800BDC25A /* ShareModel.swift */,
+			);
+			path = ViewModels;
+			sourceTree = "<group>";
+		};
 		1DD2CBE322D13B4F002B9740 = {
 			isa = PBXGroup;
 			children = (
@@ -114,6 +166,8 @@
 		1DD2CBEE22D13B4F002B9740 /* BlissApplicationsTest */ = {
 			isa = PBXGroup;
 			children = (
+				1D1479D122D275C100BDC25A /* ViewModels */,
+				1D1479C322D142B800BDC25A /* Network */,
 				1DD2CBEF22D13B4F002B9740 /* AppDelegate.swift */,
 				1DD2CBF122D13B50002B9740 /* ViewController.swift */,
 				1DD2CBF322D13B50002B9740 /* Main.storyboard */,
@@ -152,7 +206,6 @@
 				650206D0EF0DBA2D6307A73B /* Pods-BlissApplicationsTestUITests.debug.xcconfig */,
 				8D949DA9E88462737CF957C6 /* Pods-BlissApplicationsTestUITests.release.xcconfig */,
 			);
-			name = Pods;
 			path = Pods;
 			sourceTree = "<group>";
 		};
@@ -405,7 +458,17 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1D1479D022D274A700BDC25A /* HealthEndpoint.swift in Sources */,
+				1D1479CA22D147BD00BDC25A /* APIProtocol.swift in Sources */,
 				1DD2CBF222D13B50002B9740 /* ViewController.swift in Sources */,
+				1D1479D522D277AD00BDC25A /* QuestionModel.swift in Sources */,
+				1D1479D322D275D600BDC25A /* HealthModel.swift in Sources */,
+				1D1479CC22D1485200BDC25A /* APIConstants.swift in Sources */,
+				1D1479D922D2C33F00BDC25A /* ShareEndpoint.swift in Sources */,
+				1D1479DB22D2C45800BDC25A /* ShareModel.swift in Sources */,
+				1D1479C722D1473600BDC25A /* APIRouter.swift in Sources */,
+				1D1479CE22D1487000BDC25A /* APIService.swift in Sources */,
+				1D1479D722D2B11700BDC25A /* QuestionsEndpoint.swift in Sources */,
 				1DD2CBF022D13B50002B9740 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
