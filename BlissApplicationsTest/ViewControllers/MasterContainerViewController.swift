@@ -1,25 +1,31 @@
 //
-//  LoadingViewController.swift
+//  MasterContainerViewController.swift
 //  BlissApplicationsTest
 //
-//  Created by Henrique Ormonde on 06/07/19.
+//  Created by Henrique Ormonde on 09/07/19.
 //  Copyright © 2019 Rick. All rights reserved.
 //
 
 import UIKit
+import Network
 
-class LoadingViewController: UIViewController {
-
+class MasterContainerViewController: UIViewController {
+    
+    @IBOutlet weak var noConnectionView: UIView!
+    @IBOutlet weak var loadingView: UIView!
+    
     @IBOutlet weak var loader: UIActivityIndicatorView!
     @IBOutlet weak var label: UILabel!
     @IBOutlet weak var button: UIButton!
     
     var networkManager: NetworkManager?
     
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+
         self.networkManager = NetworkManager.shared()
+        self.networkManager?.masterContainerVC = self
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -49,7 +55,7 @@ class LoadingViewController: UIViewController {
             }
         })
     }
-
+    
     @IBAction func retryTap(_ sender: Any) {
         
         self.button.isHidden = true
@@ -66,6 +72,34 @@ class LoadingViewController: UIViewController {
         
     }
     
-    
-}
+    public func connectionChanged(isConnected: Bool) {
+        if isConnected {
+            self.noConnectionView.alpha = 1
+            self.noConnectionView.isHidden = false
+            UIView.animate(withDuration: 0.3, animations: {
+                self.noConnectionView.alpha = 0
+            }) { (finish) in
+                self.noConnectionView.isHidden = true
+            }
+        } else {
+            self.noConnectionView.alpha = 0
+            self.noConnectionView.isHidden = false
+            UIView.animate(withDuration: 0.3, animations: {
+                self.noConnectionView.alpha = 1
+            }) { (finish) in
+                self.noConnectionView.isHidden = false
+            }
+        }
+    }
 
+    /*
+    // MARK: - Navigation
+
+    // In a storyboard-based application, you will often want to do a little preparation before navigation
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        // Get the new view controller using segue.destination.
+        // Pass the selected object to the new view controller.
+    }
+    */
+
+}

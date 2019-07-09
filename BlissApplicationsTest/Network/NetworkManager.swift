@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import Network
 
 class NetworkManager {
     
@@ -18,6 +19,9 @@ class NetworkManager {
     var totalGenreListPage : [Int : Int]
     var totalTopRatedPage : Int
 
+    let monitor = NWPathMonitor()
+    
+    var masterContainerVC : MasterContainerViewController?
     
     private static var sharedNetworkManager: NetworkManager = {
         let questionManager = NetworkManager()
@@ -33,6 +37,22 @@ class NetworkManager {
         self.genresList = [:]
         
         self.currentQuestionListOffset = 0
+        
+        self.monitor.pathUpdateHandler = { path in
+            
+            if path.status == .satisfied {
+                print("We're connected!")
+                self.masterContainerVC?.connectionChanged(isConnected: true)
+            } else {
+                print("No connection.")
+                self.masterContainerVC?.connectionChanged(isConnected: false)
+            }
+            
+            print(path.isExpensive)
+        }
+        
+        let queue = DispatchQueue(label: "NetworkMonitor")
+        monitor.start(queue: queue)
     }
     
     // Accessors
@@ -51,6 +71,7 @@ class NetworkManager {
                 return
             }
             print("checking")
+            
             if data?.status?.uppercased() == "OK" {
                 completion?(true)
             } else {
@@ -83,6 +104,7 @@ class NetworkManager {
                 return
             }
             print("reading questions")
+            
             if let genre = data{
                 genre.forEach{
                     print($0.id ?? "")
@@ -110,6 +132,7 @@ class NetworkManager {
                 return
             }
             print("sharing")
+            
             if data?.status?.uppercased() == "OK" {
                 completion?(true)
             } else {
