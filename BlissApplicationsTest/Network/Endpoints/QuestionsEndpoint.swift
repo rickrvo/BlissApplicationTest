@@ -116,22 +116,26 @@ class QuestionNetworkService: NetworkService {
             }).disposed(by: DISPOSABLE_BAG)
     }
     
-    func updateQuestion(questionID: String?, question: String?, imageUrl: String?, thumbUrl: String?, choices: [String]?, update:@escaping (NetworkResponse, QuestionModel?)->Void) {
+    func updateQuestion(question: QuestionModel?, update:@escaping (NetworkResponse, QuestionModel?)->Void) {
         
-        if let id = questionID {
+        if let id = question?.id {
             
             var params : [String:String] = [:]
-            if let question = question, let imageUrl = imageUrl, let thumbUrl = thumbUrl, let choices = choices {
-                params["question"] = question
+            if let title = question?.question, let imageUrl = question?.imageURL, let thumbUrl = question?.thumbURL, let choices = question?.choices {
+                params["question"] = title
                 params["image_url"] = imageUrl
                 params["thumb_url"] = thumbUrl
-                params["choices"] = JSON.init(arrayLiteral: choices).stringValue
+                var fullJSONArray = [String]()
+                for choice in choices {
+                    fullJSONArray.append(choice.json())
+                }
+                params["choices"] = fullJSONArray.description
             } else {
                 update(NetworkResponse(code: 400), nil)
                 return
             }
             
-            let routeQuestion = Route(target: .questionID, targetParams: [":question_id" : id], params: params, method: .put)
+            let routeQuestion = Route(target: .questionID, targetParams: [":question_id" : String(id)], params: params, method: .put)
             
             questionObservable = self.singleRequest(route: routeQuestion)
             

@@ -15,7 +15,8 @@ class QuestionModel: Codable {
     let imageURL: String?
     let thumbURL: String?
     let publishedAt: String?
-    let choices: [Choices]?
+    var choices: [Choices]?
+    
 }
 
 extension QuestionModel {
@@ -26,7 +27,6 @@ extension QuestionModel {
         case  imageURL = "image_url"
         case  thumbURL = "thumb_url"
         case  publishedAt = "published_at"
-        case  posterPath = "poster_path"
         case  choices
         
     }
@@ -35,4 +35,13 @@ extension QuestionModel {
 public struct Choices: Codable {
     public var choice: String?
     public var votes: Int?
+    
+    func toDictionary() -> [String : Any] {
+        return ["choice": String(self.choice ?? ""),
+                 "votes": String(self.votes ?? 0) ]
+    }
+    
+    func json() -> String {
+        return toJSON(from: toDictionary())!
+    }
 }

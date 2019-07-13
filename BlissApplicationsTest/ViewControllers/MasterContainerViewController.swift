@@ -10,7 +10,7 @@ import UIKit
 import Network
 
 class MasterContainerViewController: UIViewController {
-    
+
     @IBOutlet weak var noConnectionView: UIView!
     @IBOutlet weak var loadingView: UIView!
     
@@ -19,13 +19,15 @@ class MasterContainerViewController: UIViewController {
     @IBOutlet weak var button: UIButton!
     
     var networkManager: NetworkManager?
-    
+    var appSingleton: AppSingleton?
     
     override func viewDidLoad() {
         super.viewDidLoad()
 
         self.networkManager = NetworkManager.shared()
-        self.networkManager?.masterContainerVC = self
+        
+        self.appSingleton = AppSingleton.shared()
+        self.appSingleton?.masterContainer = self
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -33,11 +35,30 @@ class MasterContainerViewController: UIViewController {
         
         self.label.text = "Checking server..."
         
+        self.checkService()
+    }
+    
+    func checkService() {
+        
         networkManager?.checkService(completion: { [unowned self] (success) in
             
             if success {
-                // working
+                
+                self.appSingleton?.delegate?.serverHealthOK()
+                
+                self.loadingView.alpha = 1
+                
+                UIView.animate(withDuration: 0.3, animations: {
+                    
+                    self.loadingView.alpha = 0
+                    
+                }, completion: { (finish) in
+                    
+                    self.loadingView.isHidden = true
+                })
+                
             } else {
+                
                 self.label.alpha = 0.0
                 self.label.text = "Service Unavailable. Please try again later."
                 
@@ -48,12 +69,12 @@ class MasterContainerViewController: UIViewController {
                 }, completion: { (finish) in
                     
                     self.button.isHidden = false
-                    
                 })
                 
                 self.loader.stopAnimating()
             }
         })
+        
     }
     
     @IBAction func retryTap(_ sender: Any) {
@@ -68,6 +89,9 @@ class MasterContainerViewController: UIViewController {
             
             self.label.alpha = 1.0
             
+        }, completion: { (finish) in
+            
+            self.checkService()
         })
         
     }
@@ -91,6 +115,7 @@ class MasterContainerViewController: UIViewController {
             }
         }
     }
+    
 
     /*
     // MARK: - Navigation
