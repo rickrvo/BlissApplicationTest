@@ -86,15 +86,19 @@ class NetworkManager {
             if let genre = data{
                 genre.forEach{
                     print($0.id ?? "")
-                    let g0 = $0
-                    if (!self.questions.contains(where: { (g) -> Bool in
-                        g.id == g0.id
-                    })) {
-                        self.questions.append(g0)
-                    }
+                    
+                    self.questions.append($0)
+//                    This would prevent duplicated IDs to be added to the list, since this is a mocked API I'll ignore this and add repeated questions
+//                    let q0 = $0
+//                    if (!self.questions.contains(where: { (q) -> Bool in
+//                        q.id == q0.id
+//                    })) {
+//                        self.questions.append(q0)
+//                    }
                 }
             }
-            self.currentQuestionListOffset = self.questions.last?.id ?? self.currentQuestionListOffset + 10
+            self.currentQuestionListOffset = self.currentQuestionListOffset + 10
+            self.appSingleton?.delegate?.refreshQuestionList()
             completion?(true)
         }
     }
