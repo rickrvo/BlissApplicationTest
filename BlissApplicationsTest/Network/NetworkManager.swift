@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import Network
 
 class NetworkManager {
     
@@ -15,9 +16,9 @@ class NetworkManager {
     
     var currentQuestionListOffset : Int
     
-    var totalGenreListPage : [Int : Int]
-    var totalTopRatedPage : Int
-
+    let monitor = NWPathMonitor()
+    
+    var appSingleton: AppSingleton?
     
     private static var sharedNetworkManager: NetworkManager = {
         let questionManager = NetworkManager()
@@ -33,6 +34,24 @@ class NetworkManager {
         self.genresList = [:]
         
         self.currentQuestionListOffset = 0
+        
+        self.appSingleton = AppSingleton.shared()
+        
+        self.monitor.pathUpdateHandler = { [unowned self] path in
+            
+            if path.status == .satisfied {
+                print("We're connected!")
+                self.appSingleton?.masterContainer?.connectionChanged(isConnected: true)
+            } else {
+                print("No connection.")
+                self.appSingleton?.masterContainer?.connectionChanged(isConnected: false)
+            }
+            
+            print(path.isExpensive)
+        }
+        
+        let queue = DispatchQueue(label: "NetworkMonitor")
+        monitor.start(queue: queue)
     }
     
     // Accessors
@@ -51,6 +70,7 @@ class NetworkManager {
                 return
             }
             print("checking")
+            
             if data?.status?.uppercased() == "OK" {
                 completion?(true)
             } else {
@@ -83,18 +103,33 @@ class NetworkManager {
                 return
             }
             print("reading questions")
-            if let genre = data{
-                genre.forEach{
+            
+            if let question = data{
+                question.forEach{
                     print($0.id ?? "")
-                    let g0 = $0
-                    if (!self.questions.contains(where: { (g) -> Bool in
-                        g.id == g0.id
+                    let q0 = $0
+                    if (!self.questions.contains(where: { (q) -> Bool in
+                        q.id == q0.id
                     })) {
-                        self.questions.append(g0)
+                        self.questions.append(q0)
                     }
                 }
             }
             self.currentQuestionListOffset = self.questions.last?.id ?? self.currentQuestionListOffset + 10
+            self.appSingleton?.delegate?.refreshQuestionList()
+            completion?(true)
+        }
+    }
+    
+    func updateAnswers(for question: QuestionModel, completion: ((Bool)->())?) {
+        
+        questionService.updateQuestion(question: question) { (result, data) in
+            if result.code != 200 || data == nil {
+                completion?(false)
+                return
+            }
+            print("updating question \(String(describing: question.id))")
+            
             completion?(true)
         }
     }
@@ -110,6 +145,7 @@ class NetworkManager {
                 return
             }
             print("sharing")
+            
             if data?.status?.uppercased() == "OK" {
                 completion?(true)
             } else {
