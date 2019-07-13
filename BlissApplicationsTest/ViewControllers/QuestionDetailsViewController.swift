@@ -17,6 +17,8 @@ class QuestionDetailsViewController: UIViewController, UITableViewDelegate, UITa
     
     var alreadyAnswered:Bool = false
     var networkManager: NetworkManager?
+    
+    var tapped: Bool = false
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -76,6 +78,22 @@ class QuestionDetailsViewController: UIViewController, UITableViewDelegate, UITa
         })
     }
     
+    
+    // MARK: - Actions
+    
+    @IBAction func shareButtonTap(_ sender: Any) {
+        
+        if tapped {
+            return
+        }
+        tapped = true
+        
+        let viewController:ShareViewController = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "ShareViewController") as! ShareViewController
+        viewController.question = question
+        self.navigationController?.show(viewController, sender: self)
+        
+        tapped = false
+    }
     
 
     /*

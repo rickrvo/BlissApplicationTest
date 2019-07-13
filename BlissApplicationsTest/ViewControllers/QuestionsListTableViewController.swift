@@ -15,7 +15,8 @@ class QuestionsListTableViewController: UITableViewController, AppSingletonDeleg
     var appSingleton: AppSingleton?
     var networkManager: NetworkManager?
     
-    var tapped:Bool = false
+    var loadingView = LoadingView()
+    var tapped: Bool = false
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -51,6 +52,7 @@ class QuestionsListTableViewController: UITableViewController, AppSingletonDeleg
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        
         if tapped {
             return
         }
@@ -65,6 +67,49 @@ class QuestionsListTableViewController: UITableViewController, AppSingletonDeleg
         tapped = false
     }
     
+    override func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        
+        if indexPath.item >= ((networkManager?.questions.count ?? 0) - 1) {
+            
+            self.loadingView.showOverlayTransparent(over: self.view)
+            
+            self.networkManager?.getQuestionList(completion: { [unowned self] (success) in
+                if success {
+                    self.tableView.reloadData()
+                }
+                self.loadingView.hideOverlayView()
+            })
+        }
+    }
+    
+    override func tableView(_: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath)  -> UISwipeActionsConfiguration {
+        
+        let shareAction = self.contextualToggleFlagAction(forRowAtIndexPath: indexPath)
+        let swipeConfig = UISwipeActionsConfiguration(actions: [shareAction])
+        return swipeConfig
+    }
+    
+    func contextualToggleFlagAction(forRowAtIndexPath indexPath: IndexPath) -> UIContextualAction {
+        
+        if let question = self.networkManager?.questions[indexPath.item] {
+            
+            let action = UIContextualAction(style: .normal,
+                                            title: "Share") { [unowned self] (contextAction: UIContextualAction, sourceView: UIView, completionHandler: (Bool) -> Void) in
+                                                
+                                                let viewController:ShareViewController = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "ShareViewController") as! ShareViewController
+                                                viewController.question = question
+                                                self.navigationController?.show(viewController, sender: self)
+                                                completionHandler(true)
+            }
+            
+            action.image = UIImage(named: "share")
+            action.backgroundColor = UIColor.green
+            
+            return action
+        }
+        return UIContextualAction()
+    }
+
     
     // MARK: - App Singleton Delegate
     
