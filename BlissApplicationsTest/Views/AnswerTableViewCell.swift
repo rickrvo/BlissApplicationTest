@@ -48,9 +48,12 @@ class AnswerTableViewCell: UITableViewCell {
         super.setSelected(selected, animated: animated)
 
         if selected {
-            self.answerLabel.textColor = #colorLiteral(red: 0.2745098174, green: 0.4862745106, blue: 0.1411764771, alpha: 1)
-            self.votesLabel.textColor = #colorLiteral(red: 0.2745098174, green: 0.4862745106, blue: 0.1411764771, alpha: 1)
             self.votesLabel.isHidden = false
+            UIView.animate(withDuration: 0.3, animations: {
+                self.answerLabel.textColor = #colorLiteral(red: 0.2745098174, green: 0.4862745106, blue: 0.1411764771, alpha: 1)
+                self.votesLabel.textColor = #colorLiteral(red: 0.2745098174, green: 0.4862745106, blue: 0.1411764771, alpha: 1)
+            })
+            
         }
     }
 
