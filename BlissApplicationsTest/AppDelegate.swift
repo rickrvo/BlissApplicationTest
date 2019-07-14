@@ -44,7 +44,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 
                 let appSingleton = AppSingleton.shared()
                 
-                appSingleton.deeplinkParameter = parameters["question_filter"]
+                appSingleton.deeplinkParameters = parameters
                 
                 appSingleton.questionsVC?.checkDeeplink()
             }

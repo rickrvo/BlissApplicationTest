@@ -20,7 +20,7 @@ class AppSingleton {
     var questionsVC: QuestionsListTableViewController?
     weak var delegate: AppSingletonDelegate?
     
-    var deeplinkParameter: String?
+    var deeplinkParameters: [String : String]?
     
     private static var sharedAppManager: AppSingleton = {
         let appManager = AppSingleton()

@@ -51,9 +51,24 @@ class QuestionsListTableViewController: UITableViewController, AppSingletonDeleg
     
     func checkDeeplink() {
         
-        if let term = appSingleton?.deeplinkParameter {
-            self.searchController.searchBar.becomeFirstResponder()
-            self.searchController.searchBar.text = term
+        if let term = appSingleton?.deeplinkParameters {
+            
+            if term["question_id"] != nil {
+                
+                let viewController:QuestionDetailsViewController = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "QuestionDetailsViewController") as! QuestionDetailsViewController
+                viewController.question = nil
+                viewController.questionID = term["question_id"]
+                self.navigationController?.show(viewController, sender: self)
+                
+            } else if term["question_filter"] != nil {
+                
+                self.searchController.searchBar.becomeFirstResponder()
+                self.searchController.searchBar.text = term["question_filter"]
+                
+            } else {
+                
+                self.searchController.searchBar.becomeFirstResponder()
+            }
         }
     }
 
