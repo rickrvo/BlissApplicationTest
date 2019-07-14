@@ -15,6 +15,7 @@ class NetworkManager {
     var genresList : [Int : [QuestionModel]]
     
     var currentQuestionListOffset : Int
+    var currentSearchOffset : Int
     
     let monitor = NWPathMonitor()
     
@@ -34,6 +35,7 @@ class NetworkManager {
         self.genresList = [:]
         
         self.currentQuestionListOffset = 0
+        self.currentSearchOffset = 0
         
         self.appSingleton = AppSingleton.shared()
         
@@ -107,15 +109,18 @@ class NetworkManager {
             if let question = data{
                 question.forEach{
                     print($0.id ?? "")
-                    let q0 = $0
-                    if (!self.questions.contains(where: { (q) -> Bool in
-                        q.id == q0.id
-                    })) {
-                        self.questions.append(q0)
-                    }
+                    
+                    self.questions.append($0)
+//                    This would prevent duplicated IDs to be added to the list, since this is a mocked API I'll ignore this and add repeated questions
+//                    let q0 = $0
+//                    if (!self.questions.contains(where: { (q) -> Bool in
+//                        q.id == q0.id
+//                    })) {
+//                        self.questions.append(q0)
+//                    }
                 }
             }
-            self.currentQuestionListOffset = self.questions.last?.id ?? self.currentQuestionListOffset + 10
+            self.currentQuestionListOffset = self.currentQuestionListOffset + 10
             self.appSingleton?.delegate?.refreshQuestionList()
             completion?(true)
         }
@@ -151,6 +156,33 @@ class NetworkManager {
             } else {
                 completion?(false)
             }
+        }
+        
+    }
+    
+    
+    // MARK: - Search
+    
+    func search(term: String, completion: (([QuestionModel])->())?) {
+        
+        questionService.getQuestionList(limit: 10, offset: self.currentSearchOffset, filter: nil) { [unowned self] (result, data) in
+            if result.code != 200 || data == nil {
+                completion?([])
+                return
+            }
+            print("reading questions")
+            
+            var searchResult = [QuestionModel]()
+            if let question = data{
+                question.forEach{
+                    print($0.id ?? "")
+                    
+                    searchResult.append($0)
+                }
+            }
+            self.currentSearchOffset = self.currentSearchOffset + 10
+            self.appSingleton?.delegate?.refreshQuestionList()
+            completion?(searchResult)
         }
         
     }
