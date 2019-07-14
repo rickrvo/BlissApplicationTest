@@ -14,8 +14,10 @@ class QuestionsListTableViewController: UITableViewController, AppSingletonDeleg
     
     var appSingleton: AppSingleton?
     var networkManager: NetworkManager?
+    var filteredQuestions = [QuestionModel]()
     
-    var loadingView = LoadingView()
+    let searchController = UISearchController(searchResultsController: nil)
+    var currentSearchString: String = ""
     var tapped: Bool = false
 
     override func viewDidLoad() {
@@ -24,6 +26,14 @@ class QuestionsListTableViewController: UITableViewController, AppSingletonDeleg
         self.appSingleton = AppSingleton.shared()
         self.appSingleton?.delegate = self
         self.networkManager = NetworkManager.shared()
+        
+        // Setup the Search Controller
+        searchController.searchResultsUpdater = self
+        searchController.obscuresBackgroundDuringPresentation = false
+        searchController.searchBar.placeholder = "Search Questions"
+        navigationItem.searchController = searchController
+        definesPresentationContext = true
+
         
         // Uncomment the following line to preserve selection between presentations
         // self.clearsSelectionOnViewWillAppear = false
@@ -39,13 +49,23 @@ class QuestionsListTableViewController: UITableViewController, AppSingletonDeleg
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        
+        if isFiltering() {
+            return filteredQuestions.count
+        }
         return self.networkManager?.questions.count ?? 0
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
-        if self.networkManager?.questions.count ?? 0 > indexPath.item {
-            return QuestionTableViewCell().createCellOnTable(tableView, question: (self.networkManager?.questions[indexPath.item])!)
+        if isFiltering() {
+            if self.filteredQuestions.count > indexPath.item {
+                return QuestionTableViewCell().createCellOnTable(tableView, question: self.filteredQuestions[indexPath.item])
+            }
+        } else {
+            if self.networkManager?.questions.count ?? 0 > indexPath.item {
+                return QuestionTableViewCell().createCellOnTable(tableView, question: (self.networkManager?.questions[indexPath.item])!)
+            }
         }
         
         return QuestionTableViewCell()
@@ -58,10 +78,21 @@ class QuestionsListTableViewController: UITableViewController, AppSingletonDeleg
         }
         tapped = true
         
-        if let question = self.networkManager?.questions[indexPath.item] {
-            let viewController:QuestionDetailsViewController = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "QuestionDetailsViewController") as! QuestionDetailsViewController
-            viewController.question = question
-            self.navigationController?.show(viewController, sender: self)
+        if isFiltering() {
+            
+            if self.filteredQuestions.count > indexPath.item {
+                let viewController:QuestionDetailsViewController = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "QuestionDetailsViewController") as! QuestionDetailsViewController
+                viewController.question = self.filteredQuestions[indexPath.item]
+                self.navigationController?.show(viewController, sender: self)
+            }
+            
+        } else {
+            
+            if let question = self.networkManager?.questions[indexPath.item] {
+                let viewController:QuestionDetailsViewController = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "QuestionDetailsViewController") as! QuestionDetailsViewController
+                viewController.question = question
+                self.navigationController?.show(viewController, sender: self)
+            }
         }
         
         tapped = false
@@ -69,16 +100,37 @@ class QuestionsListTableViewController: UITableViewController, AppSingletonDeleg
     
     override func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         
-        if indexPath.item >= ((networkManager?.questions.count ?? 0) - 1) {
+        if isFiltering() {
             
-            self.loadingView.showOverlayTransparent(over: self.view)
+            if indexPath.item >= (filteredQuestions.count - 1) {
+                
+                UIApplication.shared.isNetworkActivityIndicatorVisible = true
+                
+                networkManager?.search(term: self.currentSearchString, completion: { [unowned self] (result) in
+                    
+                    if result.count > 0 {
+                        for question in result {
+                            self.filteredQuestions.append(question)
+                        }
+                        self.tableView.reloadData()
+                    }
+                    UIApplication.shared.isNetworkActivityIndicatorVisible = false
+                })
+            }
             
-            self.networkManager?.getQuestionList(completion: { [unowned self] (success) in
-                if success {
-                    self.tableView.reloadData()
-                }
-                self.loadingView.hideOverlayView()
-            })
+        } else {
+            
+            if indexPath.item >= ((networkManager?.questions.count ?? 0) - 1) {
+                
+                UIApplication.shared.isNetworkActivityIndicatorVisible = true
+                
+                self.networkManager?.getQuestionList(completion: { [unowned self] (success) in
+                    if success {
+                        self.tableView.reloadData()
+                    }
+                    UIApplication.shared.isNetworkActivityIndicatorVisible = false
+                })
+            }
         }
     }
     
@@ -91,22 +143,45 @@ class QuestionsListTableViewController: UITableViewController, AppSingletonDeleg
     
     func contextualToggleFlagAction(forRowAtIndexPath indexPath: IndexPath) -> UIContextualAction {
         
-        if let question = self.networkManager?.questions[indexPath.item] {
+        if isFiltering() {
             
-            let action = UIContextualAction(style: .normal,
-                                            title: "Share") { [unowned self] (contextAction: UIContextualAction, sourceView: UIView, completionHandler: (Bool) -> Void) in
-                                                
-                                                let viewController:ShareViewController = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "ShareViewController") as! ShareViewController
-                                                viewController.question = question
-                                                self.navigationController?.show(viewController, sender: self)
-                                                completionHandler(true)
+            if self.filteredQuestions.count > indexPath.item {
+                
+                let action = UIContextualAction(style: .normal,
+                                                title: "Share") { [unowned self] (contextAction: UIContextualAction, sourceView: UIView, completionHandler: (Bool) -> Void) in
+                                                    
+                                                    let viewController:ShareViewController = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "ShareViewController") as! ShareViewController
+                                                    viewController.question = self.filteredQuestions[indexPath.item]
+                                                    self.navigationController?.show(viewController, sender: self)
+                                                    completionHandler(true)
+                }
+                
+                action.image = UIImage(named: "share")
+                action.backgroundColor = UIColor.green
+                
+                return action
             }
             
-            action.image = UIImage(named: "share")
-            action.backgroundColor = UIColor.green
+        } else {
             
-            return action
+            if let question = self.networkManager?.questions[indexPath.item] {
+                
+                let action = UIContextualAction(style: .normal,
+                                                title: "Share") { [unowned self] (contextAction: UIContextualAction, sourceView: UIView, completionHandler: (Bool) -> Void) in
+                                                    
+                                                    let viewController:ShareViewController = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "ShareViewController") as! ShareViewController
+                                                    viewController.question = question
+                                                    self.navigationController?.show(viewController, sender: self)
+                                                    completionHandler(true)
+                }
+                
+                action.image = UIImage(named: "share")
+                action.backgroundColor = UIColor.green
+                
+                return action
+            }
         }
+        
         return UIContextualAction()
     }
 
@@ -136,3 +211,47 @@ class QuestionsListTableViewController: UITableViewController, AppSingletonDeleg
     */
 
 }
+
+
+extension QuestionsListTableViewController: UISearchResultsUpdating {
+    
+    // MARK: - UISearchResultsUpdating Delegate
+    
+    func updateSearchResults(for searchController: UISearchController) {
+        
+        filterContentForSearchText(searchController.searchBar.text!)
+    }
+    
+    func searchBarIsEmpty() -> Bool {
+        // Returns true if the text is empty or nil
+        return searchController.searchBar.text?.isEmpty ?? true
+    }
+    
+    func filterContentForSearchText(_ searchText: String) {
+        self.currentSearchString = searchText
+        
+        if searchBarIsEmpty() {
+            filteredQuestions.removeAll()
+            networkManager?.currentSearchOffset = 0
+            return
+        }
+        
+
+        networkManager?.search(term: searchText, completion: { [unowned self] (result) in
+            
+            if result.count > 0 {
+                for question in result {
+                    self.filteredQuestions.append(question)
+                }
+                self.tableView.reloadData()
+            }
+        })
+    }
+
+    
+    func isFiltering() -> Bool {
+        return searchController.isActive && !searchBarIsEmpty()
+    }
+
+}
+
