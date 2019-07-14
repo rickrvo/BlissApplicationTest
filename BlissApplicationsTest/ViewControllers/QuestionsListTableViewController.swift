@@ -25,6 +25,7 @@ class QuestionsListTableViewController: UITableViewController, AppSingletonDeleg
 
         self.appSingleton = AppSingleton.shared()
         self.appSingleton?.delegate = self
+        self.appSingleton?.questionsVC = self
         self.networkManager = NetworkManager.shared()
         
         // Setup the Search Controller
@@ -40,6 +41,20 @@ class QuestionsListTableViewController: UITableViewController, AppSingletonDeleg
 
         // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
         // self.navigationItem.rightBarButtonItem = self.editButtonItem
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        self.checkDeeplink()
+    }
+    
+    func checkDeeplink() {
+        
+        if let term = appSingleton?.deeplinkParameter {
+            self.searchController.searchBar.becomeFirstResponder()
+            self.searchController.searchBar.text = term
+        }
     }
 
     // MARK: - Table view data source

@@ -17,7 +17,10 @@ protocol AppSingletonDelegate: class {
 class AppSingleton {
     
     var masterContainer: MasterContainerViewController?
+    var questionsVC: QuestionsListTableViewController?
     weak var delegate: AppSingletonDelegate?
+    
+    var deeplinkParameter: String?
     
     private static var sharedAppManager: AppSingleton = {
         let appManager = AppSingleton()
