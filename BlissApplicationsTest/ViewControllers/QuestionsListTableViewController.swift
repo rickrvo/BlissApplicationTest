@@ -18,7 +18,6 @@ class QuestionsListTableViewController: UITableViewController, AppSingletonDeleg
     
     let searchController = UISearchController(searchResultsController: nil)
     var currentSearchString: String = ""
-    var loadingView = LoadingView()
     var tapped: Bool = false
 
     override func viewDidLoad() {
@@ -105,7 +104,7 @@ class QuestionsListTableViewController: UITableViewController, AppSingletonDeleg
             
             if indexPath.item >= (filteredQuestions.count - 1) {
                 
-                self.loadingView.showOverlayTransparent(over: self.view)
+                UIApplication.shared.isNetworkActivityIndicatorVisible = true
                 
                 networkManager?.search(term: self.currentSearchString, completion: { [unowned self] (result) in
                     
@@ -115,7 +114,7 @@ class QuestionsListTableViewController: UITableViewController, AppSingletonDeleg
                         }
                         self.tableView.reloadData()
                     }
-                    self.loadingView.hideOverlayView()
+                    UIApplication.shared.isNetworkActivityIndicatorVisible = false
                 })
             }
             
@@ -123,13 +122,13 @@ class QuestionsListTableViewController: UITableViewController, AppSingletonDeleg
             
             if indexPath.item >= ((networkManager?.questions.count ?? 0) - 1) {
                 
-                self.loadingView.showOverlayTransparent(over: self.view)
+                UIApplication.shared.isNetworkActivityIndicatorVisible = true
                 
                 self.networkManager?.getQuestionList(completion: { [unowned self] (success) in
                     if success {
                         self.tableView.reloadData()
                     }
-                    self.loadingView.hideOverlayView()
+                    UIApplication.shared.isNetworkActivityIndicatorVisible = false
                 })
             }
         }
