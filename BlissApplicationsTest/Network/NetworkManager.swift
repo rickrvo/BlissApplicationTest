@@ -84,22 +84,39 @@ class NetworkManager {
     
     // MARK: - Questions
     
-    func getQuestion(id: Int) -> QuestionModel? {
+    func getQuestion(id: Int, completion: ((QuestionModel?)->())?) {
         
         if self.questions.count > 0 {
             let index = self.questions.firstIndex { (question) -> Bool in
                 question.id == id
             }
             if index != nil {
-                return self.questions[index!]
+                completion?(self.questions[index!])
+                return
             }
         }
-        return nil
+        
+        questionService.getQuestion(questionID: id) { (result, data) in
+            
+            if result.code != 200 || data == nil {
+                completion?(nil)
+                return
+            }
+            print("reading questions")
+            
+            if let question = data{
+                completion?(question)
+                return
+            }
+            completion?(nil)
+        }
+    
     }
 
     
     func getQuestionList(completion: ((Bool)->())?) {
         questionService.getQuestionList(limit: 10, offset: self.currentQuestionListOffset, filter: nil) { [unowned self] (result, data) in
+            
             if result.code != 200 || data == nil {
                 completion?(false)
                 return
@@ -129,6 +146,7 @@ class NetworkManager {
     func updateAnswers(for question: QuestionModel, completion: ((Bool)->())?) {
         
         questionService.updateQuestion(question: question) { (result, data) in
+            
             if result.code != 200 || data == nil {
                 completion?(false)
                 return
@@ -145,6 +163,7 @@ class NetworkManager {
     func share(email: String, content: String, completion: ((Bool)->())?) {
         
         shareService.shareQuestion(destinationEmail: email, contentUrl: content) { (result, data)  in
+            
             if result.code != 200 || data == nil {
                 completion?(false)
                 return
@@ -166,6 +185,7 @@ class NetworkManager {
     func search(term: String, completion: (([QuestionModel])->())?) {
         
         questionService.getQuestionList(limit: 10, offset: self.currentSearchOffset, filter: nil) { [unowned self] (result, data) in
+            
             if result.code != 200 || data == nil {
                 completion?([])
                 return

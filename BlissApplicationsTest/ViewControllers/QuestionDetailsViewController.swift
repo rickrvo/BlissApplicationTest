@@ -10,14 +10,16 @@ import UIKit
 
 class QuestionDetailsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
     
-    var question:QuestionModel?
+    var question: QuestionModel?
+    var questionID: String?
     
     @IBOutlet weak var questionTitle: UILabel!
     @IBOutlet weak var tableView: UITableView!
     
-    var alreadyAnswered:Bool = false
+    var alreadyAnswered: Bool = false
     var networkManager: NetworkManager?
     
+    var loadingView = LoadingView()
     var tapped: Bool = false
 
     override func viewDidLoad() {
@@ -28,7 +30,27 @@ class QuestionDetailsViewController: UIViewController, UITableViewDelegate, UITa
         if let q = question {
             self.questionTitle.text = q.question
         }
-        self.tableView.reloadData()
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        if question == nil && questionID != nil {
+            
+            self.loadingView.showOverlayTransparent(over: self.view)
+            
+            networkManager?.getQuestion(id: Int(questionID ?? "1") ?? 1) { [unowned self] (result) in
+                
+                if let question = result {
+                    self.question = question
+                    self.questionTitle.text = question.question
+                    self.tableView.reloadData()
+                }
+                
+                self.loadingView.hideOverlayView()
+            }
+        }
+        
     }
     
     // MARK: - Table view delegates
