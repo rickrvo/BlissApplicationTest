@@ -80,6 +80,42 @@ class QuestionNetworkService: NetworkService {
         }
     }
     
+    func searchQuestion(filter: String?, limit: Int? = 10, offset: Int? = 0, update:@escaping (NetworkResponse, [QuestionModel]?)->Void) {
+        
+        var params : [String:String] = [:]
+        if let limit = limit {
+            params["limit"] = String(limit)
+        }
+        if let offset = offset {
+            params["offset"] = String(offset)
+        }
+        if let filter = filter {
+            params["filter"] = String(filter)
+        }
+        
+        let routeQuestion: NetworkRoute? = Route(target: .questions, params: params, method: .get)
+        
+        questionObservable = self.singleRequest(route: routeQuestion!)
+        
+        questionObservable?
+            .subscribe(onNext: { response in
+                guard let json = response.data else {
+                    return
+                }
+                do {
+                    let model = try JSONDecoder().decode([QuestionModel].self, from: json.rawData())
+                    update(response, model)
+                } catch {
+                    print("Network Error: Failed to decode Search Question List JSON")
+                    update(response, nil)
+                }
+                
+            }, onError: { error in
+                print(error)
+                
+            }).disposed(by: DISPOSABLE_BAG)
+    }
+    
     func createQuestion(question: String?, imageUrl: String?, thumbUrl: String?, choices: [String]?, update:@escaping (NetworkResponse, QuestionModel?)->Void) {
         
         var params : [String:String] = [:]

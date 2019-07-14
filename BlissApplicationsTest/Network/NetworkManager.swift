@@ -15,6 +15,7 @@ class NetworkManager {
     var genresList : [Int : [QuestionModel]]
     
     var currentQuestionListOffset : Int
+    var currentSearchOffset : Int
     
     let monitor = NWPathMonitor()
     
@@ -34,6 +35,7 @@ class NetworkManager {
         self.genresList = [:]
         
         self.currentQuestionListOffset = 0
+        self.currentSearchOffset = 0
         
         self.appSingleton = AppSingleton.shared()
         
@@ -154,6 +156,33 @@ class NetworkManager {
             } else {
                 completion?(false)
             }
+        }
+        
+    }
+    
+    
+    // MARK: - Search
+    
+    func search(term: String, completion: (([QuestionModel])->())?) {
+        
+        questionService.getQuestionList(limit: 10, offset: self.currentSearchOffset, filter: nil) { [unowned self] (result, data) in
+            if result.code != 200 || data == nil {
+                completion?([])
+                return
+            }
+            print("reading questions")
+            
+            var searchResult = [QuestionModel]()
+            if let question = data{
+                question.forEach{
+                    print($0.id ?? "")
+                    
+                    searchResult.append($0)
+                }
+            }
+            self.currentSearchOffset = self.currentSearchOffset + 10
+            self.appSingleton?.delegate?.refreshQuestionList()
+            completion?(searchResult)
         }
         
     }

@@ -14,15 +14,18 @@ class LoadingView: NSObject {
     
     var overlayView: UIView
     var activityIndicator: UIActivityIndicatorView
+    var visible: Bool
     
     override init() {
         overlayView = UIView()
         activityIndicator = UIActivityIndicatorView()
+        visible = false
     }
     
     func showOverlayTransparent(over view: UIView) {
         self.showOverlay(over: view)
         overlayView.backgroundColor = #colorLiteral(red: 0.2558659911, green: 0.2558728456, blue: 0.2558691502, alpha: 0.5)
+        visible = true
     }
     
     func showOverlay(over view: UIView) {
@@ -42,6 +45,7 @@ class LoadingView: NSObject {
             
             activityIndicator.startAnimating()
             
+            visible = true
         }
     }
     
@@ -50,6 +54,12 @@ class LoadingView: NSObject {
         if (overlayView.superview != nil) {
             overlayView.removeFromSuperview()
         }
+        
+        visible = false
+    }
+    
+    func isHidden() -> Bool {
+        return !visible
     }
     
 }
