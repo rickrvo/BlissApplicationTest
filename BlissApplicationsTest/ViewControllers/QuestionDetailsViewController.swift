@@ -14,6 +14,7 @@ class QuestionDetailsViewController: UIViewController, UITableViewDelegate, UITa
     var questionID: String?
     
     @IBOutlet weak var questionTitle: UILabel!
+    @IBOutlet weak var imageBackground: UIImageView!
     @IBOutlet weak var tableView: UITableView!
     
     var alreadyAnswered: Bool = false
@@ -29,6 +30,7 @@ class QuestionDetailsViewController: UIViewController, UITableViewDelegate, UITa
         
         if let q = question {
             self.questionTitle.text = q.question
+            self.imageBackground.imageFromServerURL(urlString: q.imageURL ?? "")
         }
     }
     
@@ -44,6 +46,7 @@ class QuestionDetailsViewController: UIViewController, UITableViewDelegate, UITa
                 if let question = result {
                     self.question = question
                     self.questionTitle.text = question.question
+                    self.imageBackground.imageFromServerURL(urlString: question.imageURL ?? "")
                     self.tableView.reloadData()
                 }
                 

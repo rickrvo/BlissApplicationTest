@@ -2,9 +2,8 @@
 
 **This is a recruitment exercise project for Bliss**
 
-This Project is a work in progress for me to test new concepts, design patterns, etc.
 
-This is the first version I've released so far with still some adjustemns that could be improved. With that said, here is the TODO list that would be great to include in this project later on:
+This is the first version I've released so far with still some adjustments that could be improved. With that said, here is the TODO list that would be great to include in this project later on:
 
 - Improve the layout to something more appealing
 - Add some cool animations to transations and selections
