@@ -11,6 +11,7 @@ import UIKit
 class QuestionTableViewCell: UITableViewCell {
 
     @IBOutlet weak var questionLabel: UILabel!
+    @IBOutlet weak var thumbImage: UIImageView!
     
     var question:QuestionModel?
     
@@ -32,6 +33,7 @@ class QuestionTableViewCell: UITableViewCell {
         }
         
         questionLabel.text = q
+        thumbImage.imageFromServerURL(urlString: question?.thumbURL ?? "")
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {
